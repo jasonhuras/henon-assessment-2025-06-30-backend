@@ -1,6 +1,4 @@
-import logging
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .models import Currency, ExchangeRate
 from .services import FrankfurterAPIService
@@ -82,8 +80,8 @@ def exchange_rate(request):
 def available_currencies(request):
     # if we dont have any in database, get from API first.
     # # This is technically only for debugging, as we would assume that the data would be pre-populated and never be empty
-    if Currency.objects.count() == 0:
+    if Currency.objects.count() != len(settings.SUPPORTED_CURRENCIES):
         available_currencies = FrankfurterAPIService().get_available_currencies()
-        Currency.objects.bulk_create(available_currencies)
+        Currency.objects.bulk_create(available_currencies, ignore_conflicts=True)
 
     return JsonResponse({"data": [c.to_dict() for c in Currency.objects.all()]})
