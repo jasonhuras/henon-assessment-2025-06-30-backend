@@ -32,7 +32,16 @@ def exchange_rate(request):
         date.today(),
     )
 
-    return JsonResponse({"data": [r.to_dict() for r in rates]})
+    if not rates:
+        return JsonResponse({"rates": []})
+
+    return JsonResponse(
+        {
+            "base_currency": rates[0].base_currency.to_dict(),
+            "target_currency": rates[0].target_currency.to_dict(),
+            "rates": [{"rate": r.rate, "date": r.date} for r in rates],
+        }
+    )
 
 
 @require_http_methods(["GET"])
