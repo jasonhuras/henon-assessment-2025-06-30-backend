@@ -6,6 +6,12 @@ class Currency(models.Model):
     name = models.CharField(max_length=100)  # like Canadian Dollar etc.
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def to_dict(self):
+        return {"code": self.code, "name": self.name}
+
+    class Meta:
+        db_table = "currency"
+
 
 class ExchangeRate(models.Model):
     base_currency = models.ForeignKey(
@@ -20,3 +26,4 @@ class ExchangeRate(models.Model):
 
     class Meta:
         unique_together = ["base_currency", "target_currency", "date"]
+        db_table = "exchange_rate"
