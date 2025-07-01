@@ -18,7 +18,7 @@ class ExchangeRateForm(forms.Form):
     target_currency_code = forms.ChoiceField(
         choices=[(code, code) for code in settings.SUPPORTED_CURRENCIES]
     )
-    days = forms.IntegerField(required=False, min_value=1, max_value=365)
+    days = forms.IntegerField(required=True, min_value=1, max_value=365 * 2)
 
 
 @require_http_methods(["GET"])
@@ -32,7 +32,7 @@ def exchange_rate(request):
     target_currency = Currency.objects.get(
         code=form.cleaned_data["target_currency_code"]
     )
-    days = form.cleaned_data.get("days") or 0
+    days = form.cleaned_data.get("days") - 1
     end_date = date.today()
     start_date = end_date - timedelta(days=days)
 
