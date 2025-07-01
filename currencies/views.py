@@ -6,11 +6,16 @@ from .services import FrankfurterAPIService
 from datetime import date, timedelta
 from django import forms
 from django.http import JsonResponse
+from django.conf import settings
 
 
 class ExchangeRateForm(forms.Form):
-    base_currency_code = forms.CharField(max_length=3, required=True)
-    target_currency_code = forms.CharField(max_length=3, required=True)
+    base_currency_code = forms.ChoiceField(
+        choices=[(code, code) for code in settings.SUPPORTED_CURRENCIES]
+    )
+    target_currency_code = forms.ChoiceField(
+        choices=[(code, code) for code in settings.SUPPORTED_CURRENCIES]
+    )
     days = forms.IntegerField(required=False, min_value=1, max_value=365)
 
 

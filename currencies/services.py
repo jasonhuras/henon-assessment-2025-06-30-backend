@@ -38,7 +38,9 @@ class FrankfurterAPIService:
         response.raise_for_status()
 
         currencies = [
-            Currency(code=code, name=name) for code, name in response.json().items()
+            Currency(code=code, name=name)
+            for code, name in response.json().items()
+            if code in settings.SUPPORTED_CURRENCIES
         ]
 
         return currencies

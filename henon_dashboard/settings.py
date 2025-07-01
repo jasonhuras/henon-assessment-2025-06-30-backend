@@ -124,3 +124,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # my config (above was generated from django init)
 
 FRANKFURTER_API_URL = "https://api.frankfurter.app"
+SUPPORTED_CURRENCIES = ["CAD", "USD", "EUR"]
