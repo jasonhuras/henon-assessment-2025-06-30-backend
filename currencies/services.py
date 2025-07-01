@@ -8,10 +8,10 @@ class FrankfurterAPIService:
     BASE_URL = settings.FRANKFURTER_API_URL
 
     def get_historical_rates(
-        self, base: str, target: str, start_date: date, end_date: date
+        self, base: Currency, target: Currency, start_date: date, end_date: date
     ) -> list[ExchangeRate]:
         url = f"{self.BASE_URL}/{start_date}..{end_date}"
-        params = {"base": base, "symbols": target}
+        params = {"base": base.code, "symbols": target.code}
 
         response = requests.get(url, params=params)
         response.raise_for_status()
@@ -20,10 +20,10 @@ class FrankfurterAPIService:
         exchange_rates = []
 
         for date_str, currency_rate in data["rates"].items():
-            for target_currency, rate in currency_rate.items():
+            for _, rate in currency_rate.items():
                 exchange_rate = ExchangeRate(
-                    base_currency=Currency.objects.get(code=data["base"]),
-                    target_currency=Currency.objects.get(code=target_currency),
+                    base_currency=base,
+                    target_currency=target,
                     rate=rate,
                     date=datetime.strptime(date_str, "%Y-%m-%d").date(),
                 )

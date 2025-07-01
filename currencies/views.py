@@ -1,3 +1,4 @@
+import logging
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -7,6 +8,8 @@ from datetime import date, timedelta
 from django import forms
 from django.http import JsonResponse
 from django.conf import settings
+import pandas as pd
+from pandas.tseries.holiday import USFederalHolidayCalendar
 
 
 class ExchangeRateForm(forms.Form):
@@ -26,16 +29,45 @@ def exchange_rate(request):
     if not form.is_valid():
         return JsonResponse({"errors": form.errors}, status=400)
 
-    base_currency_code = form.cleaned_data["base_currency_code"]
-    target_currency_code = form.cleaned_data["target_currency_code"]
-    days = form.cleaned_data.get("days") or 0
-
-    rates = FrankfurterAPIService().get_historical_rates(
-        base_currency_code,
-        target_currency_code,
-        date.today() - timedelta(days=days),
-        date.today(),
+    base_currency = Currency.objects.get(code=form.cleaned_data["base_currency_code"])
+    target_currency = Currency.objects.get(
+        code=form.cleaned_data["target_currency_code"]
     )
+    days = form.cleaned_data.get("days") or 0
+    end_date = date.today()
+    start_date = end_date - timedelta(days=days)
+
+    # checking what we have in Database...
+    existing_dates = set(
+        ExchangeRate.objects.filter(
+            base_currency=base_currency,
+            target_currency=target_currency,
+            date__range=(start_date, end_date),
+        ).values_list("date", flat=True)
+    )
+    cal = USFederalHolidayCalendar()
+    holidays = cal.holidays(start=start_date, end=end_date)
+    business_days = pd.bdate_range(start=start_date, end=end_date, holidays=holidays)
+    required_dates = set(business_days.date)
+    # calculating difference between request and database Rows
+    missing_dates = required_dates - existing_dates
+
+    if missing_dates:
+        print(missing_dates)
+        print("dates missing, getting from api")
+        missing_rates = FrankfurterAPIService().get_historical_rates(
+            base_currency, target_currency, min(missing_dates), max(missing_dates)
+        )
+        print([a.date for a in missing_rates if a.date in missing_dates])
+        # Filter to only missing dates to avoid duplicates, this is in case we have existing rates in the range of missing rates
+        new_rates = [rate for rate in missing_rates if rate.date in missing_dates]
+        ExchangeRate.objects.bulk_create(new_rates, ignore_conflicts=True)
+
+    rates = ExchangeRate.objects.filter(
+        base_currency=base_currency,
+        target_currency=target_currency,
+        date__range=(start_date, end_date),
+    ).order_by("date")
 
     if not rates:
         return JsonResponse({"rates": []})
