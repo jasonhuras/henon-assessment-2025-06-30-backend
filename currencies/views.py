@@ -44,21 +44,21 @@ def exchange_rate(request):
             date__range=(start_date, end_date),
         ).values_list("date", flat=True)
     )
+
+    # filtering out non-business days, as they are excluded in frankfurter api
     business_days = pd.bdate_range(start=start_date, end=end_date)
     required_dates = set(business_days.date)
+
     # calculating difference between request and database Rows
     missing_dates = required_dates - existing_dates
 
     if missing_dates:
-        print(missing_dates)
-        print("dates missing, getting from api")
+        # if dates are missing, we first get from frankfurter, and persist to database
         missing_rates = FrankfurterAPIService().get_historical_rates(
             base_currency, target_currency, min(missing_dates), max(missing_dates)
         )
-        print([a.date for a in missing_rates])
-        # Filter to only missing dates to avoid duplicates, this is in case we have existing rates in the range of missing rates
-        new_rates = [rate for rate in missing_rates if rate.date in missing_dates]
-        ExchangeRate.objects.bulk_create(new_rates, ignore_conflicts=True)
+        print(f"dates missing, getting {len(missing_rates)} rates from api")
+        ExchangeRate.objects.bulk_create(missing_rates, ignore_conflicts=True)
 
     rates = ExchangeRate.objects.filter(
         base_currency=base_currency,
