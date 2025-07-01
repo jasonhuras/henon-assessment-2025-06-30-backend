@@ -4,7 +4,7 @@ from .models import Currency, ExchangeRate
 from .services import FrankfurterAPIService
 from datetime import date, timedelta
 from django import forms
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 import pandas as pd
 
@@ -85,3 +85,36 @@ def available_currencies(request):
         Currency.objects.bulk_create(available_currencies, ignore_conflicts=True)
 
     return JsonResponse({"data": [c.to_dict() for c in Currency.objects.all()]})
+
+
+# this would not be exposed to all users, ideally this would be locked down with an authentication key/role
+# ideally this would be called by scheduling done through infrastructure, like a lambda or cron job to handle errors and work in distributed/scaled env
+@require_http_methods(["POST"])
+def load_monthly_data(request):
+
+    last_day_of_last_month = date.today().replace(day=1) - timedelta(days=1)
+    first_day_of_last_month = last_day_of_last_month.replace(day=1)
+
+    currencies = Currency.objects.all()
+
+    for base_currency in currencies:
+        for target_currency in currencies:
+
+            # skip CAD/CAD for example
+            if base_currency == target_currency:
+                continue
+
+            exchange_rates = FrankfurterAPIService().get_historical_rates(
+                base_currency,
+                target_currency,
+                first_day_of_last_month,
+                last_day_of_last_month,
+            )
+
+            print(
+                f"loading data for {base_currency.code}/{target_currency.code} of size {len(exchange_rates)}"
+            )
+
+            ExchangeRate.objects.bulk_create(exchange_rates, ignore_conflicts=True)
+
+    return HttpResponse(status=204)
