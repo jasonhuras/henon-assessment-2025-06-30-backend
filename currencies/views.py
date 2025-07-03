@@ -10,7 +10,7 @@ from datetime import date, timedelta
 import pandas as pd
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "OPTIONS"])
 def exchange_rate(request):
     form = ExchangeRateForm(request.GET)
 
@@ -67,7 +67,7 @@ def exchange_rate(request):
     )
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "OPTIONS"])
 def supported_currencies(request):
     # if we dont have any in database, get from API first.
     # # This is technically only for debugging, as we would assume that the data would be pre-populated and never be empty
@@ -82,7 +82,7 @@ def supported_currencies(request):
 
 # this would not be exposed to all users, ideally this would be locked down with an authentication key/role
 # ideally this would be called by scheduling done through infrastructure, like a lambda or cron job to handle errors and work in distributed/scaled env
-@require_http_methods(["POST"])
+@require_http_methods(["POST", "OPTIONS"])
 def load_monthly_data(request):
 
     last_day_of_last_month = date.today().replace(day=1) - timedelta(days=1)

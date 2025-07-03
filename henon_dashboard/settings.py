@@ -31,16 +31,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "currencies",
     "corsheaders",
+    "currencies",
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    "currencies.middleware.APIKeyMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "currencies.middleware.APIKeyMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -131,11 +131,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 FRANKFURTER_API_URL = "https://api.frankfurter.app"
 SUPPORTED_CURRENCIES = ["CAD", "USD", "EUR", "JPY", "GBP"]
 
+CORS_ALLOWED_ORIGINS = [os.getenv("FRONT_END_HOST")]
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    os.environ.get("FRONT_END_HOST"),
-]
+
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
@@ -146,14 +145,7 @@ CORS_ALLOW_HEADERS = [
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
-]
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
+    "x-api-key",
 ]
 
 API_KEY = os.environ.get("DJANGO_API_KEY")
