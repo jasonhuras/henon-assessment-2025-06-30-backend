@@ -20,6 +20,8 @@ ALLOWED_HOSTS = [
     "http://localhost:3000",
     "http://react-frontend",
     "http://localhost:25565",
+    os.environ.get("FRONT_END_HOST"),
+    "https://henon-assessment-2025-06-30-fronten.vercel.app/"
 ]
 
 
@@ -136,6 +138,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://react-frontend",
     "http://localhost:25565",
+    os.environ.get("FRONT_END_HOST"),
+    "https://henon-assessment-2025-06-30-fronten.vercel.app/"
 ]
 
 CORS_ALLOW_HEADERS = [
