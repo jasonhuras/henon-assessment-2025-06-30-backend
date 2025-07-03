@@ -6,10 +6,15 @@ class APIKeyMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
+    # middleware.py
     def __call__(self, request):
-        api_key = request.headers.get("X-API-Key", "")
+        if request.method == "OPTIONS":
+            return self.get_response(request)
 
-        if api_key != settings.API_KEY:
-            return JsonResponse({"error": "Unauthorized"}, status=401)
+        if request.path.startswith("/api/"):
+            api_key = request.headers.get("X-API-Key")
+
+            if api_key != settings.API_KEY:
+                return JsonResponse({"error": "Invalid API key"}, status=401)
 
         return self.get_response(request)
