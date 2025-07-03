@@ -16,7 +16,7 @@ SECRET_KEY = os.getenv("DJANGO_SECURITY_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["http://localhost:3000", "http://react-frontend"]
 
 
 # Application definition
