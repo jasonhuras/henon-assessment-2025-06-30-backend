@@ -128,11 +128,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 FRANKFURTER_API_URL = "https://api.frankfurter.app"
 SUPPORTED_CURRENCIES = ["CAD", "USD", "EUR", "JPY", "GBP"]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://react-frontend",
-    os.getenv("FRONT_END_HOST"),
-]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://react-frontend"]
 
 CORS_ALLOW_HEADERS = [
     "accept",
