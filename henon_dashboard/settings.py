@@ -134,7 +134,6 @@ SUPPORTED_CURRENCIES = ["CAD", "USD", "EUR", "JPY", "GBP"]
 
 CORS_ALLOWED_ORIGINS = [
     os.environ.get("FRONT_END_HOST"),
-    os.environ.get("FRONT_END_HOST_2"),
 ]
 
 CORS_ALLOW_HEADERS = [
