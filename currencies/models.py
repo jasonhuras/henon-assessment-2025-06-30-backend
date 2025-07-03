@@ -6,9 +6,6 @@ class Currency(models.Model):
     name = models.CharField(max_length=100)  # like Canadian Dollar etc.
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def to_dict(self):
-        return {"code": self.code, "name": self.name}
-
     class Meta:
         db_table = "currency"
 
