@@ -1,22 +1,13 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.conf import settings
+
+from currencies.utils import currency_utils
 from .models import Currency, ExchangeRate
 from .services import FrankfurterAPIService
+from .forms import ExchangeRateForm
 from datetime import date, timedelta
-from django import forms
-from django.http import JsonResponse, HttpResponse
-from django.conf import settings
 import pandas as pd
-
-
-class ExchangeRateForm(forms.Form):
-    base_currency_code = forms.ChoiceField(
-        choices=[(code, code) for code in settings.SUPPORTED_CURRENCIES]
-    )
-    target_currency_code = forms.ChoiceField(
-        choices=[(code, code) for code in settings.SUPPORTED_CURRENCIES]
-    )
-    days = forms.IntegerField(required=True, min_value=1, max_value=365 * 2)
 
 
 @require_http_methods(["GET"])
@@ -30,9 +21,8 @@ def exchange_rate(request):
     target_currency = Currency.objects.get(
         code=form.cleaned_data["target_currency_code"]
     )
-    days = form.cleaned_data.get("days") - 1
-    end_date = date.today()
-    start_date = end_date - timedelta(days=days)
+    start_date = form.cleaned_data["start_date"]
+    end_date = form.cleaned_data["end_date"]
 
     # checking what we have in Database...
     existing_dates = set(
@@ -69,22 +59,25 @@ def exchange_rate(request):
 
     return JsonResponse(
         {
-            "base_currency": rates[0].base_currency.to_dict(),
-            "target_currency": rates[0].target_currency.to_dict(),
-            "rates": [{"rate": r.rate, "date": r.date} for r in rates],
+            "data": {
+                "code": f"{base_currency.code}{target_currency.code}",
+                "rates": [{"rate": r.rate, "date": r.date} for r in rates],
+            }
         }
     )
 
 
 @require_http_methods(["GET"])
-def available_currencies(request):
+def supported_currencies(request):
     # if we dont have any in database, get from API first.
     # # This is technically only for debugging, as we would assume that the data would be pre-populated and never be empty
     if Currency.objects.count() != len(settings.SUPPORTED_CURRENCIES):
         available_currencies = FrankfurterAPIService().get_available_currencies()
         Currency.objects.bulk_create(available_currencies, ignore_conflicts=True)
 
-    return JsonResponse({"data": [c.to_dict() for c in Currency.objects.all()]})
+    return JsonResponse(
+        {"data": currency_utils.format_currency_pairs(Currency.objects.all())}
+    )
 
 
 # this would not be exposed to all users, ideally this would be locked down with an authentication key/role
@@ -97,6 +90,8 @@ def load_monthly_data(request):
 
     currencies = Currency.objects.all()
 
+    # generating all combinations
+    # we dont use the util method here because we need to access the actual Currency object
     for base_currency in currencies:
         for target_currency in currencies:
 
