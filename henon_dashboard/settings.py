@@ -18,11 +18,8 @@ SECRET_KEY = os.getenv("DJANGO_SECURITY_KEY")
 DEBUG = os.getenv("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = [
-    "http://localhost:3000",
-    "http://react-frontend",
-    "http://localhost:25565",
     os.environ.get("FRONT_END_HOST"),
-    "https://henon-assessment-2025-06-30-fronten.vercel.app",
+    os.environ.get("FRONT_END_HOST_2"),
 ]
 
 
@@ -136,11 +133,8 @@ FRANKFURTER_API_URL = "https://api.frankfurter.app"
 SUPPORTED_CURRENCIES = ["CAD", "USD", "EUR", "JPY", "GBP"]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://react-frontend",
-    "http://localhost:25565",
     os.environ.get("FRONT_END_HOST"),
-    "https://henon-assessment-2025-06-30-fronten.vercel.app",
+    os.environ.get("FRONT_END_HOST_2"),
 ]
 
 CORS_ALLOW_HEADERS = [
