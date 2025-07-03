@@ -6,6 +6,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+PORT = int(os.environ.get("PORT", 8000))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -21,7 +22,7 @@ ALLOWED_HOSTS = [
     "http://react-frontend",
     "http://localhost:25565",
     os.environ.get("FRONT_END_HOST"),
-    "https://henon-assessment-2025-06-30-fronten.vercel.app/"
+    "https://henon-assessment-2025-06-30-fronten.vercel.app",
 ]
 
 
@@ -139,7 +140,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://react-frontend",
     "http://localhost:25565",
     os.environ.get("FRONT_END_HOST"),
-    "https://henon-assessment-2025-06-30-fronten.vercel.app/"
+    "https://henon-assessment-2025-06-30-fronten.vercel.app",
 ]
 
 CORS_ALLOW_HEADERS = [
