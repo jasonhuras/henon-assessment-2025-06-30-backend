@@ -130,6 +130,7 @@ SUPPORTED_CURRENCIES = ["CAD", "USD", "EUR", "JPY", "GBP"]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://react-frontend"
     os.getenv("FRONT_END_HOST"),
 ]
 
