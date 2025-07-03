@@ -16,7 +16,11 @@ SECRET_KEY = os.getenv("DJANGO_SECURITY_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG")
 
-ALLOWED_HOSTS = ["http://localhost:3000", "http://react-frontend"]
+ALLOWED_HOSTS = [
+    "http://localhost:3000",
+    "http://react-frontend",
+    "http://localhost:25565",
+]
 
 
 # Application definition
@@ -128,7 +132,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 FRANKFURTER_API_URL = "https://api.frankfurter.app"
 SUPPORTED_CURRENCIES = ["CAD", "USD", "EUR", "JPY", "GBP"]
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://react-frontend"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://react-frontend",
+    "http://localhost:25565",
+]
 
 CORS_ALLOW_HEADERS = [
     "accept",
