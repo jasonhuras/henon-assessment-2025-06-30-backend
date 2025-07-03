@@ -18,8 +18,7 @@ SECRET_KEY = os.getenv("DJANGO_SECURITY_KEY")
 DEBUG = os.getenv("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = [
-    os.environ.get("FRONT_END_HOST"),
-    os.environ.get("FRONT_END_HOST_2"),
+    os.environ.get("BACK_END_HOST"),
 ]
 
 
@@ -132,10 +131,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 FRANKFURTER_API_URL = "https://api.frankfurter.app"
 SUPPORTED_CURRENCIES = ["CAD", "USD", "EUR", "JPY", "GBP"]
 
+
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     os.environ.get("FRONT_END_HOST"),
 ]
-
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
@@ -146,7 +146,14 @@ CORS_ALLOW_HEADERS = [
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
-    "x-api-key",
+]
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
 
 API_KEY = os.environ.get("DJANGO_API_KEY")
